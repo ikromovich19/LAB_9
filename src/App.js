@@ -1,23 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import Navbar from './components/Navbar';
+import List from './components/List';
+import  { useState, useEffect } from 'react';
 
 function App() {
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetch('https://randomuser.me/api/?results=5')
+      .then(res => res.json())
+      .then(
+        result => {
+          setIsLoading(false);
+          setData(result.results);
+        },
+        error => {
+          setIsLoading(false);
+          setError(error);
+        }
+      );
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Navbar />
+      {
+  data.map(item => (
+    <List
+      key={item.id.value}
+      userAvatar={item.picture.large}
+      firstName={item.name.first}
+      lastName={item.name.last}
+      email={item.email}
+    />
+  ))
+}
     </div>
   );
 }
